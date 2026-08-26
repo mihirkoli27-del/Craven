@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  /* Premium Coffee Brown Theme Palette */
-  --theme-bg: #FAF7F2;
+  /* Soft Ocean Green Theme Palette */
+  --theme-bg: #F4FAF8;
   --theme-surface: #FFFFFF;
-  --theme-subtle: #F3ECE5;
-  --theme-border: #E5D8CD;
-  --theme-border-subtle: #D6C4B4;
-  --theme-text: #2D1D16;
-  --theme-text-muted: #685145;
-  --theme-text-subtle: #988072;
-  --theme-primary: #4E3120;
-  --theme-primary-hover: #3B2315;
-  --theme-primary-light: #F3ECE5;
-  --theme-primary-text: #4E3120;
-  --theme-accent: #A65B27;
-  --theme-accent-light: #FAF0E6;
-  --theme-accent-text: #834014;
-  --theme-btn-bg: #362116;
-  --theme-btn-hover: #26160E;
+  --theme-subtle: #E7F2EE;
+  --theme-border: #D2E6DF;
+  --theme-border-subtle: #B5D6CD;
+  --theme-text: #112620;
+  --theme-text-muted: #3F5E55;
+  --theme-text-subtle: #6D8E84;
+  --theme-primary: #1E6B55;
+  --theme-primary-hover: #154D3D;
+  --theme-primary-light: #E9F5F1;
+  --theme-primary-text: #1E6B55;
+  --theme-accent: #2C8C99;
+  --theme-accent-light: #EAF7F8;
+  --theme-accent-text: #195C65;
+  --theme-btn-bg: #1B5E4A;
+  --theme-btn-hover: #134737;
   --theme-btn-text: #FFFFFF;
-  --theme-ring: #6F4E37;
+  --theme-ring: #268066;
 }
 
 @layer base {
