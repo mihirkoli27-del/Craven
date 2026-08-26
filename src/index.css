@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+:root {
+  /* Premium Coffee Brown Theme Palette */
+  --theme-bg: #FAF7F2;
+  --theme-surface: #FFFFFF;
+  --theme-subtle: #F3ECE5;
+  --theme-border: #E5D8CD;
+  --theme-border-subtle: #D6C4B4;
+  --theme-text: #2D1D16;
+  --theme-text-muted: #685145;
+  --theme-text-subtle: #988072;
+  --theme-primary: #4E3120;
+  --theme-primary-hover: #3B2315;
+  --theme-primary-light: #F3ECE5;
+  --theme-primary-text: #4E3120;
+  --theme-accent: #A65B27;
+  --theme-accent-light: #FAF0E6;
+  --theme-accent-text: #834014;
+  --theme-btn-bg: #362116;
+  --theme-btn-hover: #26160E;
+  --theme-btn-text: #FFFFFF;
+  --theme-ring: #6F4E37;
+}
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--theme-bg);
+    color: var(--theme-text);
+  }
+
+  .font-serif {
+    font-family: 'Playfair Display', Georgia, Cambria, 'Times New Roman', serif;
+  }
+}
+
+@media print {
+  header, footer, nav, button {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

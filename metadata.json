@@ -1,0 +1,6 @@
+{
+  "name": "Craven - 7-Day Diet & Nutrition Planner",
+  "description": "Personalized diet planner collecting biometrics, fitness goals, dietary preferences, activity levels, daily meal schedules, taste preferences, food budget, and hydration to generate precision 7-day meal plans with verified grocery costs and food label analyzer.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
