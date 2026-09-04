@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   CalendarDays,
   ScanLine,
@@ -6,8 +6,11 @@ import {
   Leaf,
   IndianRupee,
   ChefHat,
+  LogOut,
+  User as UserIcon,
 } from 'lucide-react';
 import { formatCurrency } from '../utils/formatters';
+import { AuthUser } from '../types';
 
 export type ActiveTab = 'plan' | 'recipes' | 'analyzer';
 
@@ -17,6 +20,9 @@ interface NavbarProps {
   onOpenGenerator: () => void;
   weeklyBudget: number;
   currency: string;
+  user: AuthUser | null;
+  onLogin: (credential: string) => void;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -25,7 +31,43 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenGenerator,
   weeklyBudget,
   currency,
+  user,
+  onLogin,
+  onLogout,
 }) => {
+  // Initialize Google Identity Services
+  useEffect(() => {
+    const initGoogle = () => {
+      const g = (window as any).google;
+      if (g?.accounts?.id && !user) {
+        g.accounts.id.initialize({
+          client_id: '561167231838-etavemdj5gpmqh7pavth0288kgnjlii4.apps.googleusercontent.com',
+          callback: (response: any) => {
+            if (response?.credential) {
+              onLogin(response.credential);
+            }
+          },
+          auto_select: false,
+        });
+
+        const container = document.getElementById('google-signin-btn-container');
+        if (container) {
+          container.innerHTML = '';
+          g.accounts.id.renderButton(container, {
+            theme: 'outline',
+            size: 'medium',
+            type: 'standard',
+            shape: 'pill',
+            text: 'signin_with',
+          });
+        }
+      }
+    };
+
+    initGoogle();
+    const timer = setTimeout(initGoogle, 800);
+    return () => clearTimeout(timer);
+  }, [user, onLogin]);
   return (
     <header
       className="sticky top-0 z-40 backdrop-blur-md border-b shadow-xs transition-colors"
@@ -151,6 +193,73 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ~{formatCurrency(weeklyBudget / 7, currency)} / day
               </span>
             </div>
+
+            {/* User Account / Google Sign-In */}
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <div
+                  className="flex items-center space-x-2 px-2.5 py-1.5 rounded-xl border text-xs font-medium"
+                  style={{
+                    backgroundColor: 'var(--theme-subtle)',
+                    borderColor: 'var(--theme-border)',
+                  }}
+                >
+                  {user.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      className="w-5 h-5 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white"
+                      style={{ backgroundColor: 'var(--theme-primary)' }}
+                    >
+                      {user.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  <span className="hidden sm:inline max-w-[110px] truncate" style={{ color: 'var(--theme-text)' }}>
+                    {user.name || user.email}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  title="Sign out of Google"
+                  className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all hover:opacity-80 cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--theme-surface)',
+                    borderColor: 'var(--theme-border)',
+                    color: 'var(--theme-text-muted)',
+                  }}
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-1.5">
+                <div id="google-signin-btn-container" className="min-h-[36px] flex items-center" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const g = (window as any).google;
+                    if (g?.accounts?.id) {
+                      g.accounts.id.prompt();
+                    }
+                  }}
+                  className="flex sm:hidden items-center space-x-1 px-2.5 py-1.5 rounded-xl border text-xs font-medium cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--theme-surface)',
+                    borderColor: 'var(--theme-border)',
+                    color: 'var(--theme-text)',
+                  }}
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Login</span>
+                </button>
+              </div>
+            )}
 
             {/* AI Customizer Button */}
             <button

@@ -1,16 +1,276 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
+import { OAuth2Client } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
+import pg from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json({ limit: '25mb' }));
+
+// Google OAuth & JWT Configuration
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '561167231838-etavemdj5gpmqh7pavth0288kgnjlii4.apps.googleusercontent.com';
+const JWT_SECRET = process.env.JWT_SECRET || 'craven_super_secure_jwt_token_secret_key_2026';
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+// ----------------------------------------------------
+// DATABASE LAYER: PostgreSQL (Render) with Local JSON Fallback
+// ----------------------------------------------------
+const { Pool } = pg;
+let pool: pg.Pool | null = null;
+let isPostgresReady = false;
+
+const rawDbUrl = process.env.DATABASE_URL?.trim();
+const isDbUrlValid = Boolean(
+  rawDbUrl &&
+  (rawDbUrl.startsWith('postgres://') || rawDbUrl.startsWith('postgresql://')) &&
+  rawDbUrl !== 'MY_DATABASE_URL'
+);
+
+if (isDbUrlValid) {
+  try {
+    pool = new Pool({
+      connectionString: rawDbUrl,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+    });
+    // Create tables if not existing
+    pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        google_id VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        name VARCHAR(255),
+        avatar_url TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS user_profiles (
+        user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+        profile_data JSONB NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE TABLE IF NOT EXISTS diet_plans (
+        id VARCHAR(100) PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        plan_data JSONB NOT NULL,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `).then(() => {
+      isPostgresReady = true;
+      console.log('✅ PostgreSQL database connected and tables verified.');
+    }).catch((err: any) => {
+      console.warn('⚠️ PostgreSQL connection failed, using local storage fallback:', err.message);
+      isPostgresReady = false;
+    });
+  } catch (err: any) {
+    console.warn('⚠️ PostgreSQL initialization warning:', err.message);
+  }
+}
+
+// Local Database Fallback (.craven-local-db.json)
+interface LocalDB {
+  users: Array<{ id: number; google_id: string; email: string; name: string; avatar_url: string; created_at: string }>;
+  user_profiles: Record<string, any>;
+  diet_plans: Array<{ id: string; user_id: number; plan_data: any; is_active: boolean; created_at: string }>;
+}
+
+const LOCAL_DB_PATH = path.join(process.cwd(), '.craven-local-db.json');
+
+function readLocalDB(): LocalDB {
+  try {
+    if (fs.existsSync(LOCAL_DB_PATH)) {
+      return JSON.parse(fs.readFileSync(LOCAL_DB_PATH, 'utf-8'));
+    }
+  } catch (e) {
+    console.warn('Could not read local db, initializing fresh:', e);
+  }
+  return { users: [], user_profiles: {}, diet_plans: [] };
+}
+
+function writeLocalDB(data: LocalDB) {
+  try {
+    fs.writeFileSync(LOCAL_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) {
+    console.warn('Could not write local db:', e);
+  }
+}
+
+// Unified Database Helpers
+async function dbUpsertUser(googleId: string, email: string, name: string, avatarUrl: string) {
+  if (isPostgresReady && pool) {
+    try {
+      const res = await pool.query(
+        `INSERT INTO users (google_id, email, name, avatar_url)
+         VALUES ($1, $2, $3, $4)
+         ON CONFLICT (google_id) DO UPDATE SET name = $3, avatar_url = $4
+         RETURNING id, google_id, email, name, avatar_url, created_at`,
+        [googleId, email, name, avatarUrl]
+      );
+      return res.rows[0];
+    } catch (e) {
+      console.warn('Postgres upsertUser error, using local fallback:', e);
+    }
+  }
+
+  const local = readLocalDB();
+  let user = local.users.find((u) => u.google_id === googleId);
+  if (user) {
+    user.name = name;
+    user.avatar_url = avatarUrl;
+  } else {
+    user = {
+      id: local.users.length + 1,
+      google_id: googleId,
+      email,
+      name,
+      avatar_url: avatarUrl,
+      created_at: new Date().toISOString(),
+    };
+    local.users.push(user);
+  }
+  writeLocalDB(local);
+  return user;
+}
+
+async function dbGetUserById(id: number | string) {
+  if (isPostgresReady && pool) {
+    try {
+      const res = await pool.query('SELECT id, google_id, email, name, avatar_url FROM users WHERE id = $1', [id]);
+      if (res.rows.length > 0) return res.rows[0];
+    } catch (e) {
+      console.warn('Postgres getUserById error:', e);
+    }
+  }
+  const local = readLocalDB();
+  return local.users.find((u) => String(u.id) === String(id)) || null;
+}
+
+async function dbSaveUserProfile(userId: number | string, profileData: any) {
+  if (isPostgresReady && pool) {
+    try {
+      await pool.query(
+        `INSERT INTO user_profiles (user_id, profile_data, updated_at)
+         VALUES ($1, $2, CURRENT_TIMESTAMP)
+         ON CONFLICT (user_id) DO UPDATE SET profile_data = $2, updated_at = CURRENT_TIMESTAMP`,
+        [userId, JSON.stringify(profileData)]
+      );
+      return;
+    } catch (e) {
+      console.warn('Postgres saveUserProfile error:', e);
+    }
+  }
+  const local = readLocalDB();
+  local.user_profiles[String(userId)] = profileData;
+  writeLocalDB(local);
+}
+
+async function dbGetUserProfile(userId: number | string) {
+  if (isPostgresReady && pool) {
+    try {
+      const res = await pool.query('SELECT profile_data FROM user_profiles WHERE user_id = $1', [userId]);
+      if (res.rows.length > 0) return res.rows[0].profile_data;
+    } catch (e) {
+      console.warn('Postgres getUserProfile error:', e);
+    }
+  }
+  const local = readLocalDB();
+  return local.user_profiles[String(userId)] || null;
+}
+
+async function dbSaveUserPlan(userId: number | string, planData: any) {
+  const planId = planData.id || 'plan-' + Date.now();
+  if (isPostgresReady && pool) {
+    try {
+      await pool.query('UPDATE diet_plans SET is_active = FALSE WHERE user_id = $1', [userId]);
+      await pool.query(
+        `INSERT INTO diet_plans (id, user_id, plan_data, is_active, created_at)
+         VALUES ($1, $2, $3, TRUE, CURRENT_TIMESTAMP)
+         ON CONFLICT (id) DO UPDATE SET plan_data = $3, is_active = TRUE`,
+        [planId, userId, JSON.stringify(planData)]
+      );
+      return;
+    } catch (e) {
+      console.warn('Postgres saveUserPlan error:', e);
+    }
+  }
+  const local = readLocalDB();
+  local.diet_plans.forEach((p) => {
+    if (String(p.user_id) === String(userId)) p.is_active = false;
+  });
+  const existing = local.diet_plans.find((p) => p.id === planId);
+  if (existing) {
+    existing.plan_data = planData;
+    existing.is_active = true;
+  } else {
+    local.diet_plans.unshift({
+      id: planId,
+      user_id: Number(userId),
+      plan_data: planData,
+      is_active: true,
+      created_at: new Date().toISOString(),
+    });
+  }
+  writeLocalDB(local);
+}
+
+async function dbGetUserActivePlan(userId: number | string) {
+  if (isPostgresReady && pool) {
+    try {
+      const res = await pool.query(
+        'SELECT plan_data FROM diet_plans WHERE user_id = $1 AND is_active = TRUE ORDER BY created_at DESC LIMIT 1',
+        [userId]
+      );
+      if (res.rows.length > 0) return res.rows[0].plan_data;
+    } catch (e) {
+      console.warn('Postgres getUserActivePlan error:', e);
+    }
+  }
+  const local = readLocalDB();
+  const found = local.diet_plans.find((p) => String(p.user_id) === String(userId) && p.is_active);
+  return found ? found.plan_data : null;
+}
+
+async function dbGetUserPlans(userId: number | string) {
+  if (isPostgresReady && pool) {
+    try {
+      const res = await pool.query(
+        'SELECT id, plan_data, is_active, created_at FROM diet_plans WHERE user_id = $1 ORDER BY created_at DESC',
+        [userId]
+      );
+      return res.rows.map((r) => ({ ...r.plan_data, id: r.id, is_active: r.is_active, createdAt: r.created_at }));
+    } catch (e) {
+      console.warn('Postgres getUserPlans error:', e);
+    }
+  }
+  const local = readLocalDB();
+  return local.diet_plans
+    .filter((p) => String(p.user_id) === String(userId))
+    .map((p) => ({ ...p.plan_data, id: p.id, is_active: p.is_active, createdAt: p.created_at }));
+}
+
+// Authentication Middleware
+function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: Missing authorization header' });
+  }
+  const token = authHeader.substring(7).trim();
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    (req as any).user = decoded;
+    next();
+  } catch (err: any) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+  }
+}
 
 // Helper to get GoogleGenAI client dynamically with current process.env.GEMINI_API_KEY
 function getAI(): GoogleGenAI | null {
@@ -31,7 +291,130 @@ function getAI(): GoogleGenAI | null {
 // Health Check API
 app.get('/api/health', (req, res) => {
   const hasKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY');
-  res.json({ status: 'ok', hasGeminiKey: hasKey });
+  const hasOAuth = Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'MY_GOOGLE_CLIENT_ID');
+  res.json({
+    status: 'ok',
+    hasGeminiKey: hasKey,
+    hasGoogleOAuth: hasOAuth,
+    database: isPostgresReady ? 'postgresql' : 'local-json',
+  });
+});
+
+// Google OAuth Token Exchange & Login
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ error: 'Missing Google credential token' });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload || !payload.sub || !payload.email) {
+      return res.status(400).json({ error: 'Invalid Google credential token' });
+    }
+
+    const user = await dbUpsertUser(
+      payload.sub,
+      payload.email,
+      payload.name || payload.email.split('@')[0],
+      payload.picture || ''
+    );
+
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatar_url,
+      },
+      JWT_SECRET,
+      { expiresIn: '30d' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatar_url,
+      },
+    });
+  } catch (err: any) {
+    console.error('Google auth verification error:', err);
+    res.status(401).json({ error: 'Google authentication failed', message: err.message });
+  }
+});
+
+// Current User Profile Verification
+app.get('/api/auth/me', requireAuth, async (req: any, res) => {
+  try {
+    const user = await dbGetUserById(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.avatar_url,
+      },
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to retrieve user session' });
+  }
+});
+
+// Load User Saved Data (Profile & Active Plan)
+app.get('/api/user/data', requireAuth, async (req: any, res) => {
+  try {
+    const [profile, plan] = await Promise.all([
+      dbGetUserProfile(req.user.userId),
+      dbGetUserActivePlan(req.user.userId),
+    ]);
+    res.json({ profile, plan });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to retrieve user data', message: err.message });
+  }
+});
+
+// Save User Profile
+app.post('/api/user/profile', requireAuth, async (req: any, res) => {
+  try {
+    const { profile } = req.body;
+    if (!profile) return res.status(400).json({ error: 'Missing profile payload' });
+    await dbSaveUserProfile(req.user.userId, profile);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to save profile' });
+  }
+});
+
+// Save User 7-Day Plan
+app.post('/api/user/plan', requireAuth, async (req: any, res) => {
+  try {
+    const { plan } = req.body;
+    if (!plan) return res.status(400).json({ error: 'Missing plan payload' });
+    await dbSaveUserPlan(req.user.userId, plan);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to save plan' });
+  }
+});
+
+// Get User History of Plans
+app.get('/api/user/plans', requireAuth, async (req: any, res) => {
+  try {
+    const plans = await dbGetUserPlans(req.user.userId);
+    res.json({ plans });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to retrieve user plans' });
+  }
 });
 
 // Fallback procedural Diet Plan Generator if Gemini API Key is missing or rate limited

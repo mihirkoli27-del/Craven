@@ -15,12 +15,25 @@ import { RecipesView } from './components/RecipesView';
 import { DietPlanWizard } from './components/DietPlanWizard';
 import { DEFAULT_PLANS } from './data/defaultPlans';
 import { INITIAL_USER_PROFILE } from './data/defaultProfile';
-import { DietPlan, Meal, PlanGenerationConfig, UserProfileInput } from './types';
+import { DietPlan, Meal, PlanGenerationConfig, UserProfileInput, AuthUser } from './types';
 import { calculateDietMetrics } from './utils/dietCalculations';
 
 export default function App() {
   // Navigation: only 'plan' (Diet Plan) or 'analyzer' (Food & Label Analyzer)
   const [activeTab, setActiveTab] = useState<ActiveTab>('plan');
+
+  // User Authentication State
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => {
+    try {
+      const saved = localStorage.getItem('craven_user');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return null;
+  });
+
+  const [authToken, setAuthToken] = useState<string | null>(() => {
+    return localStorage.getItem('craven_auth_token') || null;
+  });
 
   // User Profile Input State
   const [userProfile, setUserProfile] = useState<UserProfileInput>(() => {
@@ -64,14 +77,158 @@ export default function App() {
     }, 4000);
   };
 
-  // Sync active plan to localStorage
+  // Sync user profile & active plan from Database if logged in
+  useEffect(() => {
+    if (!authToken) return;
+
+    const loadUserData = async () => {
+      try {
+        const [meRes, dataRes] = await Promise.all([
+          fetch('/api/auth/me', { headers: { Authorization: `Bearer ${authToken}` } }),
+          fetch('/api/user/data', { headers: { Authorization: `Bearer ${authToken}` } }),
+        ]);
+
+        if (meRes.ok) {
+          const { user } = await meRes.json();
+          setCurrentUser(user);
+          localStorage.setItem('craven_user', JSON.stringify(user));
+        } else {
+          // Token expired or invalid
+          setAuthToken(null);
+          setCurrentUser(null);
+          localStorage.removeItem('craven_auth_token');
+          localStorage.removeItem('craven_user');
+          return;
+        }
+
+        if (dataRes.ok) {
+          const { profile: dbProfile, plan: dbPlan } = await dataRes.json();
+          if (dbProfile) {
+            setUserProfile(dbProfile);
+            localStorage.setItem('craven_user_profile', JSON.stringify(dbProfile));
+          }
+          if (dbPlan) {
+            setActivePlan(dbPlan);
+            localStorage.setItem('craven_active_plan', JSON.stringify(dbPlan));
+            setIsWizardCollapsed(true);
+          }
+        }
+      } catch (err) {
+        console.warn('Backend user sync warning:', err);
+      }
+    };
+
+    loadUserData();
+  }, [authToken]);
+
+  // Handle Google OAuth Login
+  const handleGoogleLogin = async (credential: string) => {
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || 'Authentication failed');
+      }
+
+      const { token, user } = await res.json();
+      setAuthToken(token);
+      setCurrentUser(user);
+      localStorage.setItem('craven_auth_token', token);
+      localStorage.setItem('craven_user', JSON.stringify(user));
+      showToast(`👋 Welcome, ${user.name || 'User'}! Connected to database.`);
+
+      // Sync user data to DB
+      try {
+        const dataRes = await fetch('/api/user/data', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (dataRes.ok) {
+          const { profile: dbProfile, plan: dbPlan } = await dataRes.json();
+          if (dbPlan) {
+            setActivePlan(dbPlan);
+            setIsWizardCollapsed(true);
+          } else if (activePlan) {
+            // First time login: save current plan
+            await fetch('/api/user/plan', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ plan: activePlan }),
+            });
+          }
+
+          if (dbProfile) {
+            setUserProfile(dbProfile);
+          } else if (userProfile) {
+            await fetch('/api/user/profile', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ profile: userProfile }),
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Sync on login error:', e);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || 'Google sign-in failed');
+    }
+  };
+
+  // Handle Logout
+  const handleLogout = () => {
+    setAuthToken(null);
+    setCurrentUser(null);
+    localStorage.removeItem('craven_auth_token');
+    localStorage.removeItem('craven_user');
+    showToast('Signed out. Using local storage mode.');
+  };
+
+  // Sync active plan to localStorage and database
   useEffect(() => {
     try {
       localStorage.setItem('craven_active_plan', JSON.stringify(activePlan));
     } catch (e) {
       console.warn('Storage sync warning', e);
     }
-  }, [activePlan]);
+
+    // Auto-save to backend if logged in
+    if (authToken && activePlan) {
+      fetch('/api/user/plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ plan: activePlan }),
+      }).catch((e) => console.warn('Plan auto-save to backend warning:', e));
+    }
+  }, [activePlan, authToken]);
+
+  // Auto-save profile to backend if logged in
+  useEffect(() => {
+    if (authToken && userProfile) {
+      fetch('/api/user/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ profile: userProfile }),
+      }).catch((e) => console.warn('Profile auto-save to backend warning:', e));
+    }
+  }, [userProfile, authToken]);
 
   // Handle Generating New Plan via Gemini / Backend using the full User Profile
   const handleGeneratePlanFromProfile = async (profile: UserProfileInput) => {
@@ -207,6 +364,9 @@ export default function App() {
         }}
         weeklyBudget={activePlan.estimatedWeeklyCost}
         currency={activePlan.currency || '₹'}
+        user={currentUser}
+        onLogin={handleGoogleLogin}
+        onLogout={handleLogout}
       />
 
       {/* Main Content Area */}

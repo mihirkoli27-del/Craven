@@ -301,3 +301,11 @@ export interface PlanGenerationConfig {
   cookingSkill: string;
   profile?: UserProfileInput;
 }
+
+export interface AuthUser {
+  id: number | string;
+  email: string;
+  name: string;
+  avatarUrl?: string;
+}
+
