@@ -1,20 +1,5 @@
 # 🥗 Craven — Precision 7-Day Diet & Budget Grocery Planner
 
-<div align="center">
-
-![Craven Banner](https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1400&q=80)
-
-**Personalized 7-Day Nutrition • Budget Optimization • Zero-Waste Ingredient Reuse • Multimodal AI Food Analyzer**
-
-[![Node.js](https://img.shields.io/badge/Node.js-v20+-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-19.0-61dafb.svg)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.2-646cff.svg)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38bdf8.svg)](https://tailwindcss.com/)
-[![Google Gemini](https://img.shields.io/badge/Google_Gemini-2.5_%2F_3.7_Flash-8e24aa.svg)](https://ai.google.dev/)
-[![Spoonacular](https://img.shields.io/badge/Spoonacular_API-Integrated-orange.svg)](https://spoonacular.com/food-api)
-
-</div>
 
 ---
 
