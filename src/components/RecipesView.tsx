@@ -391,40 +391,49 @@ export const RecipesView: React.FC<RecipesViewProps> = ({ currency = '₹' }) =>
         </div>
 
         {/* Dietary Highlights Bar */}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs font-bold text-stone-500 mr-1 flex items-center space-x-1">
-            <Filter className="w-3 h-3 inline" />
-            <span>Diet:</span>
-          </span>
-          {diets.map((diet) => {
-            const isSelected = selectedDiet === diet;
-            return (
-              <button
-                key={diet}
-                type="button"
-                onClick={() => setSelectedDiet(diet)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
-                  isSelected
-                    ? 'bg-amber-900 text-white border-amber-900 shadow-2xs'
-                    : 'hover:border-stone-400'
-                }`}
-                style={
-                  !isSelected
-                    ? {
-                        backgroundColor: 'var(--theme-subtle)',
-                        borderColor: 'var(--theme-border)',
-                        color: 'var(--theme-text)',
-                      }
-                    : undefined
-                }
-              >
-                {diet}
-              </button>
-            );
-          })}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span
+              className="text-xs font-bold mr-1 flex items-center space-x-1"
+              style={{ color: 'var(--theme-text-muted)' }}
+            >
+              <Filter className="w-3 h-3 inline" />
+              <span>Diet:</span>
+            </span>
+            {diets.map((diet) => {
+              const isSelected = selectedDiet === diet;
+              return (
+                <button
+                  key={diet}
+                  type="button"
+                  onClick={() => setSelectedDiet(diet)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+                    isSelected
+                      ? 'shadow-2xs'
+                      : 'hover:opacity-80'
+                  }`}
+                  style={
+                    isSelected
+                      ? {
+                          backgroundColor: 'var(--theme-btn-bg)',
+                          borderColor: 'var(--theme-btn-bg)',
+                          color: 'var(--theme-btn-text)',
+                        }
+                      : {
+                          backgroundColor: 'var(--theme-subtle)',
+                          borderColor: 'var(--theme-border)',
+                          color: 'var(--theme-text)',
+                        }
+                  }
+                >
+                  {diet}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Time Filter Chips */}
-          <div className="ml-auto flex items-center space-x-1">
+          <div className="flex items-center space-x-1 shrink-0">
             {['All', '<15m', '<30m'].map((time) => {
               const isSelected = selectedTimeFilter === time;
               return (
@@ -451,7 +460,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({ currency = '₹' }) =>
       </div>
 
       {/* Recipe Cards Count & Status */}
-      <div className="flex items-center justify-between text-xs text-stone-500 px-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-stone-500 px-1">
         <div className="flex items-center space-x-2">
           <span>
             Showing <strong>{filteredRecipes.length}</strong> {filteredRecipes.length === 1 ? 'recipe' : 'recipes'}
@@ -484,7 +493,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({ currency = '₹' }) =>
 
       {/* Recipe Grid */}
       {filteredRecipes.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
           {filteredRecipes.map((recipe) => {
             const isFav = favoriteIds.includes(recipe.id);
             const totalTime = recipe.totalTimeMinutes || recipe.prepTimeMinutes + recipe.cookTimeMinutes;

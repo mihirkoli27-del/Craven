@@ -59,9 +59,9 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className="rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border shadow-2xl flex flex-col"
+        className="rounded-3xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto border shadow-2xl flex flex-col"
         style={{
           backgroundColor: 'var(--theme-surface)',
           borderColor: 'var(--theme-border)',
@@ -69,7 +69,7 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
       >
         {/* Modal Header */}
         <div
-          className="sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between backdrop-blur-md"
+          className="sticky top-0 z-10 px-4 sm:px-6 py-3.5 sm:py-4 border-b flex items-center justify-between backdrop-blur-md"
           style={{
             backgroundColor: 'var(--theme-surface)',
             borderColor: 'var(--theme-border)',
@@ -77,20 +77,20 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
         >
           <div className="flex items-center space-x-2.5">
             <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-white"
+              className="w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0"
               style={{ backgroundColor: 'var(--theme-primary)' }}
             >
               <Sparkles className="w-4 h-4 text-amber-200" />
             </div>
             <div>
               <h2
-                className="text-lg font-bold font-serif"
+                className="text-base sm:text-lg font-bold font-serif"
                 style={{ color: 'var(--theme-text)' }}
               >
                 Generate Custom Diet Plan
               </h2>
               <p
-                className="text-xs font-medium"
+                className="text-[11px] sm:text-xs font-medium"
                 style={{ color: 'var(--theme-text-muted)' }}
               >
                 Personalized meal schedule tailored to your goals & budget
@@ -114,7 +114,7 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
 
         {/* Modal Body: Loading state vs Config Form */}
         {isLoading ? (
-          <div className="p-8 sm:p-12 text-center space-y-6">
+          <div className="p-6 sm:p-12 text-center space-y-6">
             <div className="relative w-20 h-20 mx-auto">
               <div
                 className="absolute inset-0 rounded-full border-4 animate-ping opacity-30"
@@ -130,7 +130,7 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
 
             <div className="space-y-2">
               <h3
-                className="text-xl font-bold font-serif"
+                className="text-lg sm:text-xl font-bold font-serif"
                 style={{ color: 'var(--theme-text)' }}
               >
                 Craven AI is Architecting Your 7-Day Plan
@@ -221,7 +221,7 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5">
             {/* Primary Goal & Diet Type */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -288,7 +288,7 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
               >
                 Weekly Budget Tier ({currency})
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setBudgetTier('thrifty')}
@@ -454,13 +454,13 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
 
             {/* Modal Actions */}
             <div
-              className="pt-4 border-t flex items-center justify-end space-x-3"
+              className="pt-4 border-t flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:space-x-3"
               style={{ borderColor: 'var(--theme-border)' }}
             >
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-medium rounded-xl transition-colors cursor-pointer hover:opacity-80"
+                className="w-full sm:w-auto px-4 py-2.5 text-xs font-medium rounded-xl transition-colors cursor-pointer hover:opacity-80 text-center"
                 style={{
                   backgroundColor: 'var(--theme-subtle)',
                   color: 'var(--theme-text)',
@@ -470,7 +470,7 @@ export const PlanGeneratorModal: React.FC<PlanGeneratorModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="flex items-center space-x-2 px-6 py-2.5 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer active:scale-95"
+                className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer active:scale-95"
                 style={{
                   backgroundColor: 'var(--theme-btn-bg)',
                   color: 'var(--theme-btn-text)',

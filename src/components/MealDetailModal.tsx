@@ -39,9 +39,9 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
   const mealPriceInfo = getMealPricePer100g(meal);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className="rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border shadow-2xl flex flex-col"
+        className="rounded-3xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto border shadow-2xl flex flex-col"
         style={{
           backgroundColor: 'var(--theme-surface)',
           borderColor: 'var(--theme-border)',
@@ -49,7 +49,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
       >
         {/* Modal Header */}
         <div
-          className="sticky top-0 z-10 px-6 py-4 border-b flex items-center justify-between backdrop-blur-md"
+          className="sticky top-0 z-10 px-4 sm:px-6 py-3 sm:py-4 border-b flex items-center justify-between backdrop-blur-md"
           style={{
             backgroundColor: 'var(--theme-surface)',
             borderColor: 'var(--theme-border)',
@@ -94,25 +94,25 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
         </div>
 
         {/* Modal Content Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-5 sm:space-y-6">
           {/* Title & Timing */}
           <div>
             <h2
-              className="text-2xl sm:text-3xl font-bold font-serif"
+              className="text-xl sm:text-2xl md:text-3xl font-bold font-serif"
               style={{ color: 'var(--theme-text)' }}
             >
               {meal.name}
             </h2>
             <p
-              className="text-sm mt-1.5 leading-relaxed"
+              className="text-xs sm:text-sm mt-1.5 leading-relaxed"
               style={{ color: 'var(--theme-text-muted)' }}
             >
               {meal.description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-2.5 mt-4 text-xs font-medium">
+            <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-4 text-xs font-medium">
               <span
-                className="flex items-center border px-3 py-1.5 rounded-xl font-bold"
+                className="flex items-center border px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl font-bold"
                 style={{
                   backgroundColor: 'var(--theme-primary-light)',
                   borderColor: 'var(--theme-border)',
@@ -124,33 +124,33 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
               </span>
 
               <span
-                className="flex items-center border px-3 py-1.5 rounded-xl"
+                className="flex items-center border px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl"
                 style={{
                   backgroundColor: 'var(--theme-subtle)',
                   borderColor: 'var(--theme-border)',
                   color: 'var(--theme-text)',
                 }}
               >
-                <Clock className="w-4 h-4 mr-1.5" style={{ color: 'var(--theme-text-muted)' }} />
-                Prep: {meal.prepTimeMinutes}m | Cook: {meal.cookTimeMinutes}m ({totalTime}m total)
+                <Clock className="w-3.5 h-3.5 mr-1.5" style={{ color: 'var(--theme-text-muted)' }} />
+                Prep: {meal.prepTimeMinutes}m | Cook: {meal.cookTimeMinutes}m ({totalTime}m)
               </span>
 
               <span
-                className="flex items-center border px-3 py-1.5 rounded-xl"
+                className="flex items-center border px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl"
                 style={{
                   backgroundColor: 'var(--theme-accent-light)',
                   borderColor: 'var(--theme-border)',
                   color: 'var(--theme-accent-text)',
                 }}
               >
-                <Flame className="w-4 h-4 mr-1.5" style={{ color: 'var(--theme-accent)' }} />
+                <Flame className="w-3.5 h-3.5 mr-1.5" style={{ color: 'var(--theme-accent)' }} />
                 {formatCalories(meal.macros.calories)}
               </span>
 
               {meal.dietaryBadges?.map((badge, idx) => (
                 <span
                   key={idx}
-                  className="px-2.5 py-1.5 border rounded-xl"
+                  className="px-2.5 py-1 sm:py-1.5 border rounded-xl"
                   style={{
                     backgroundColor: 'var(--theme-primary-light)',
                     borderColor: 'var(--theme-border)',
@@ -165,7 +165,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
 
           {/* Macro Breakdown Bar */}
           <div
-            className="rounded-2xl p-4 border"
+            className="rounded-2xl p-3.5 sm:p-4 border"
             style={{
               backgroundColor: 'var(--theme-subtle)',
               borderColor: 'var(--theme-border)',
@@ -177,7 +177,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
             >
               Nutritional Macros Breakdown
             </h4>
-            <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
               <div
                 className="p-2.5 rounded-xl border shadow-2xs"
                 style={{
@@ -425,7 +425,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
 
         {/* Modal Footer */}
         <div
-          className="sticky bottom-0 px-6 py-4 border-t flex items-center justify-end"
+          className="sticky bottom-0 px-4 sm:px-6 py-3 sm:py-4 border-t flex items-center justify-end"
           style={{
             backgroundColor: 'var(--theme-subtle)',
             borderColor: 'var(--theme-border)',
@@ -433,7 +433,7 @@ export const MealDetailModal: React.FC<MealDetailModalProps> = ({
         >
           <button
             onClick={onClose}
-            className="px-5 py-2 text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer active:scale-95"
+            className="w-full sm:w-auto px-5 py-2 text-xs font-semibold rounded-xl shadow-xs transition-colors cursor-pointer active:scale-95"
             style={{
               backgroundColor: 'var(--theme-btn-bg)',
               color: 'var(--theme-btn-text)',

@@ -469,7 +469,7 @@ export const FoodAnalyzerView: React.FC = () => {
       {/* Results View */}
       {result && (
         <div
-          className="rounded-3xl border p-6 sm:p-8 shadow-xs space-y-6 animate-in fade-in duration-300"
+          className="rounded-3xl border p-4 sm:p-6 md:p-8 shadow-xs space-y-6 animate-in fade-in duration-300"
           style={{
             backgroundColor: 'var(--theme-surface)',
             borderColor: 'var(--theme-border)',
@@ -603,7 +603,7 @@ export const FoodAnalyzerView: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
             {/* Score Radial Card (4 Cols) */}
             <div
-              className="lg:col-span-4 p-5 rounded-2xl border flex items-center space-x-5"
+              className="lg:col-span-4 p-4 sm:p-5 rounded-2xl border flex items-center space-x-3.5 sm:space-x-5"
               style={{
                 backgroundColor: 'var(--theme-subtle)',
                 borderColor: 'var(--theme-border)',
@@ -796,7 +796,7 @@ export const FoodAnalyzerView: React.FC = () => {
                 borderColor: 'var(--theme-border)',
               }}
             >
-              <div className="flex items-center justify-between text-[11px] font-bold">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-[11px] font-bold">
                 <span style={{ color: 'var(--theme-text)' }}>Macronutrient Energy Distribution:</span>
                 <div className="flex items-center gap-3">
                   <span className="text-emerald-700">Protein: {proteinPercent}%</span>
@@ -976,9 +976,9 @@ export const FoodAnalyzerView: React.FC = () => {
 
       {/* Camera Capture Modal */}
       {isCameraActive && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs">
           <div
-            className="rounded-3xl max-w-lg w-full p-5 space-y-4 border shadow-2xl"
+            className="rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-4 sm:p-5 space-y-4 border shadow-2xl"
             style={{
               backgroundColor: 'var(--theme-surface)',
               borderColor: 'var(--theme-border)',

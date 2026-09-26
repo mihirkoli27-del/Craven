@@ -295,20 +295,20 @@ ${recipe.chefTips?.join('\n') || 'Enjoy fresh and warm!'}
               </span>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 text-center">
-              <div className="p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+              <div className="p-2 sm:p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
                 <p className="text-base sm:text-lg font-black text-amber-900 dark:text-amber-300">{scaledProtein}g</p>
                 <p className="text-[10px] font-bold text-stone-500">Protein</p>
               </div>
-              <div className="p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
+              <div className="p-2 sm:p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
                 <p className="text-base sm:text-lg font-black text-orange-900 dark:text-orange-300">{scaledCarbs}g</p>
                 <p className="text-[10px] font-bold text-stone-500">Carbs</p>
               </div>
-              <div className="p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
+              <div className="p-2 sm:p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
                 <p className="text-base sm:text-lg font-black text-emerald-900 dark:text-emerald-300">{scaledFat}g</p>
                 <p className="text-[10px] font-bold text-stone-500">Healthy Fats</p>
               </div>
-              <div className="p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
+              <div className="p-2 sm:p-2.5 rounded-xl border bg-white/40 dark:bg-black/20" style={{ borderColor: 'var(--theme-border)' }}>
                 <p className="text-base sm:text-lg font-black text-blue-900 dark:text-blue-300">{recipe.macros.fiber ? Math.round(recipe.macros.fiber * servingMultiplier) : 4}g</p>
                 <p className="text-[10px] font-bold text-stone-500">Fiber</p>
               </div>
@@ -462,17 +462,17 @@ ${recipe.chefTips?.join('\n') || 'Enjoy fresh and warm!'}
 
         {/* Footer Actions */}
         <div
-          className="p-4 sm:p-5 border-t flex flex-wrap items-center justify-between gap-2"
+          className="p-3.5 sm:p-5 border-t flex flex-wrap items-center justify-between gap-2.5"
           style={{
             borderColor: 'var(--theme-border)',
             backgroundColor: 'var(--theme-surface)',
           }}
         >
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={handleCopyRecipe}
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all hover:bg-black/5 cursor-pointer"
+              className="flex items-center space-x-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border text-xs font-bold transition-all hover:bg-black/5 cursor-pointer"
               style={{
                 backgroundColor: 'var(--theme-subtle)',
                 borderColor: 'var(--theme-border)',
@@ -480,13 +480,13 @@ ${recipe.chefTips?.join('\n') || 'Enjoy fresh and warm!'}
               }}
             >
               {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? 'Recipe Copied!' : 'Copy Recipe'}</span>
+              <span>{copied ? 'Copied!' : 'Copy'}</span>
             </button>
 
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all hover:bg-black/5 cursor-pointer hidden sm:flex"
+              className="flex items-center space-x-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border text-xs font-bold transition-all hover:bg-black/5 cursor-pointer hidden sm:flex"
               style={{
                 backgroundColor: 'var(--theme-subtle)',
                 borderColor: 'var(--theme-border)',
@@ -502,7 +502,7 @@ ${recipe.chefTips?.join('\n') || 'Enjoy fresh and warm!'}
                 href={recipe.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all hover:bg-black/5 cursor-pointer"
+                className="flex items-center space-x-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border text-xs font-bold transition-all hover:bg-black/5 cursor-pointer"
                 style={{
                   backgroundColor: 'var(--theme-subtle)',
                   borderColor: 'var(--theme-border)',
@@ -510,7 +510,7 @@ ${recipe.chefTips?.join('\n') || 'Enjoy fresh and warm!'}
                 }}
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span>Original Source</span>
+                <span className="hidden xs:inline">Original</span> Source
               </a>
             )}
 
@@ -518,7 +518,7 @@ ${recipe.chefTips?.join('\n') || 'Enjoy fresh and warm!'}
               <button
                 type="button"
                 onClick={() => onAddToFavorites(recipe)}
-                className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
                   isFavorite ? 'text-red-600 bg-red-50 border-red-200' : 'hover:bg-black/5'
                 }`}
                 style={!isFavorite ? {
@@ -536,7 +536,7 @@ ${recipe.chefTips?.join('\n') || 'Enjoy fresh and warm!'}
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+            className="w-full sm:w-auto px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
             style={{
               backgroundColor: 'var(--theme-btn-bg)',
               color: 'var(--theme-btn-text)',

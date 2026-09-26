@@ -1199,7 +1199,7 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
               <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--theme-text-muted)' }}>
                 Preferred Meals Per Day:
               </label>
-              <div className="grid grid-cols-5 gap-2.5">
+              <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5">
                 {[2, 3, 4, 5, 6].map((num) => {
                   const isSelected = profile.mealsPerDay === num;
                   return (
@@ -1207,7 +1207,7 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
                       key={num}
                       type="button"
                       onClick={() => updateProfile('mealsPerDay', num as any)}
-                      className={`py-3 rounded-2xl border text-sm font-bold transition-all cursor-pointer ${
+                      className={`py-2.5 sm:py-3 px-1 rounded-2xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                         isSelected ? 'ring-2 ring-amber-800 shadow-xs' : 'hover:opacity-80'
                       }`}
                       style={{
@@ -1216,7 +1216,7 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
                         borderColor: isSelected ? 'var(--theme-primary)' : 'var(--theme-border)',
                       }}
                     >
-                      {num} Meals
+                      <span>{num}</span> <span className="hidden sm:inline">Meals</span>
                     </button>
                   );
                 })}
@@ -1636,7 +1636,7 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
                   <span className="text-[10px] text-stone-400 font-normal normal-case">(Live)</span>
                 </label>
                 <div
-                  className="w-full px-2 py-1.5 rounded-xl border grid grid-cols-4 gap-1 text-center"
+                  className="w-full px-1.5 py-1.5 rounded-xl border grid grid-cols-4 gap-1 text-center"
                   style={{
                     backgroundColor: 'var(--theme-subtle)',
                     borderColor: 'var(--theme-border)',
@@ -1644,26 +1644,26 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
                 >
                   <div className={`p-1 rounded-lg ${ (profile.budgetPeriod || 'Day') === 'Day' ? 'bg-amber-900/10 ring-1 ring-amber-800/30' : 'bg-black/5'}`}>
                     <span className="block text-[9px] uppercase font-bold text-stone-500">Day</span>
-                    <span className="text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
-                      ₹{Math.round(Number(profile.dailyFoodBudget) || 0)}
+                    <span className="text-[11px] sm:text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
+                      {profile.currency || '₹'}{Math.round(Number(profile.dailyFoodBudget) || 0)}
                     </span>
                   </div>
                   <div className={`p-1 rounded-lg ${ (profile.budgetPeriod || 'Day') === 'Week' ? 'bg-amber-900/10 ring-1 ring-amber-800/30' : 'bg-black/5'}`}>
                     <span className="block text-[9px] uppercase font-bold text-stone-500">Week</span>
-                    <span className="text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
-                      ₹{Math.round((Number(profile.dailyFoodBudget) || 0) * 7)}
+                    <span className="text-[11px] sm:text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
+                      {profile.currency || '₹'}{Math.round((Number(profile.dailyFoodBudget) || 0) * 7)}
                     </span>
                   </div>
                   <div className={`p-1 rounded-lg ${ (profile.budgetPeriod || 'Day') === 'Month' ? 'bg-amber-900/10 ring-1 ring-amber-800/30' : 'bg-black/5'}`}>
                     <span className="block text-[9px] uppercase font-bold text-stone-500">Month</span>
-                    <span className="text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
-                      ₹{Math.round((Number(profile.dailyFoodBudget) || 0) * 30)}
+                    <span className="text-[11px] sm:text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
+                      {profile.currency || '₹'}{Math.round((Number(profile.dailyFoodBudget) || 0) * 30)}
                     </span>
                   </div>
                   <div className={`p-1 rounded-lg ${ (profile.budgetPeriod || 'Day') === 'Year' ? 'bg-amber-900/10 ring-1 ring-amber-800/30' : 'bg-black/5'}`}>
                     <span className="block text-[9px] uppercase font-bold text-stone-500">Year</span>
-                    <span className="text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
-                      ₹{Math.round((Number(profile.dailyFoodBudget) || 0) * 365)}
+                    <span className="text-[11px] sm:text-xs font-bold block truncate" style={{ color: 'var(--theme-text)' }}>
+                      {profile.currency || '₹'}{Math.round((Number(profile.dailyFoodBudget) || 0) * 365)}
                     </span>
                   </div>
                 </div>
@@ -1756,50 +1756,50 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
                 return (
                   <div className="space-y-4">
                     {/* Live KPI & Budget Status Banner */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                      <div className="p-2.5 rounded-xl border bg-amber-50/50 border-amber-200">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 block">Weekly Grocery Cost</span>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+                      <div className="p-2 sm:p-2.5 rounded-xl border bg-amber-50/50 border-amber-200">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-900 block truncate">Weekly Grocery Cost</span>
                         <div className="flex items-baseline space-x-1 mt-0.5">
-                          <span className="text-base sm:text-lg font-extrabold text-amber-950 font-serif">₹{totalWeeklyCost}</span>
-                          <span className="text-[11px] text-amber-800">/ week</span>
+                          <span className="text-sm sm:text-lg font-extrabold text-amber-950 font-serif">₹{totalWeeklyCost}</span>
+                          <span className="text-[10px] sm:text-[11px] text-amber-800">/ week</span>
                         </div>
-                        <span className="text-[10px] text-stone-500 block">≈ ₹{totalDailyCost} / day</span>
+                        <span className="text-[9px] sm:text-[10px] text-stone-500 block truncate">≈ ₹{totalDailyCost} / day</span>
                       </div>
 
-                      <div className="p-2.5 rounded-xl border bg-emerald-50/50 border-emerald-200">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-900 block">Your Weekly Budget</span>
+                      <div className="p-2 sm:p-2.5 rounded-xl border bg-emerald-50/50 border-emerald-200">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-900 block truncate">Your Weekly Budget</span>
                         <div className="flex items-baseline space-x-1 mt-0.5">
-                          <span className="text-base sm:text-lg font-extrabold text-emerald-950 font-serif">₹{weeklyBudget}</span>
-                          <span className="text-[11px] text-emerald-800">/ week</span>
+                          <span className="text-sm sm:text-lg font-extrabold text-emerald-950 font-serif">₹{weeklyBudget}</span>
+                          <span className="text-[10px] sm:text-[11px] text-emerald-800">/ week</span>
                         </div>
-                        <span className={`text-[10px] font-semibold block ${budgetDifference >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+                        <span className={`text-[9px] sm:text-[10px] font-semibold block truncate ${budgetDifference >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
                           {budgetDifference >= 0 ? `+₹${budgetDifference} Buffer Saved` : `₹${Math.abs(budgetDifference)} deficit`}
                         </span>
                       </div>
 
-                      <div className="p-2.5 rounded-xl border bg-stone-50 border-stone-200">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-stone-600 block">Target Daily Protein</span>
+                      <div className="p-2 sm:p-2.5 rounded-xl border bg-stone-50 border-stone-200">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-stone-600 block truncate">Target Daily Protein</span>
                         <div className="flex items-baseline space-x-1 mt-0.5">
-                          <span className="text-base sm:text-lg font-extrabold text-stone-900 font-serif">~{dailyProteinGrams}g</span>
-                          <span className="text-[11px] text-stone-600">/ day</span>
+                          <span className="text-sm sm:text-lg font-extrabold text-stone-900 font-serif">~{dailyProteinGrams}g</span>
+                          <span className="text-[10px] sm:text-[11px] text-stone-600">/ day</span>
                         </div>
-                        <span className="text-[10px] text-stone-500 block">100% complete sources</span>
+                        <span className="text-[9px] sm:text-[10px] text-stone-500 block truncate">100% complete sources</span>
                       </div>
 
-                      <div className="p-2.5 rounded-xl border bg-stone-50 border-stone-200">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-stone-600 block">Target Daily Energy</span>
+                      <div className="p-2 sm:p-2.5 rounded-xl border bg-stone-50 border-stone-200">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-stone-600 block truncate">Target Daily Energy</span>
                         <div className="flex items-baseline space-x-1 mt-0.5">
-                          <span className="text-base sm:text-lg font-extrabold text-stone-900 font-serif">~{dailyCalories}</span>
-                          <span className="text-[11px] text-stone-600">kcal</span>
+                          <span className="text-sm sm:text-lg font-extrabold text-stone-900 font-serif">~{dailyCalories}</span>
+                          <span className="text-[10px] sm:text-[11px] text-stone-600">kcal</span>
                         </div>
-                        <span className="text-[10px] text-stone-500 block">Balanced fuel</span>
+                        <span className="text-[9px] sm:text-[10px] text-stone-500 block truncate">Balanced fuel</span>
                       </div>
                     </div>
 
                     {/* Weekly Grocery Items Table */}
                     <div className="border rounded-xl overflow-hidden" style={{ borderColor: 'var(--theme-border)' }}>
                       <div
-                        className="px-3 py-2 text-xs font-bold uppercase tracking-wider flex items-center justify-between border-b"
+                        className="px-3 py-2 text-xs font-bold uppercase tracking-wider flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b"
                         style={{
                           backgroundColor: 'var(--theme-subtle)',
                           borderColor: 'var(--theme-border)',
@@ -2362,15 +2362,15 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
 
       {/* FOOTER ACTION BAR: BACK, SKIP, NEXT & GENERATE BUTTON */}
       <div
-        className="pt-5 border-t border-black/10 flex flex-col sm:flex-row items-center justify-between gap-3 mt-4"
+        className="pt-5 border-t border-black/10 flex items-center justify-between gap-3 mt-4"
       >
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <div className="flex items-center space-x-2">
           {currentStep > 1 && (
             <button
               type="button"
               onClick={handleBack}
               disabled={isGenerating}
-              className="flex-1 sm:flex-initial flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer hover:opacity-80"
+              className="flex items-center justify-center space-x-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer hover:opacity-80"
               style={{
                 backgroundColor: 'var(--theme-subtle)',
                 borderColor: 'var(--theme-border)',
@@ -2382,19 +2382,19 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
             </button>
           )}
 
-          <span className="text-xs hidden sm:inline-block" style={{ color: 'var(--theme-text-muted)' }}>
+          <span className="text-xs text-stone-500 font-medium hidden sm:inline-block">
             Step {currentStep} of 9
           </span>
         </div>
 
-        <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
+        <div className="flex items-center space-x-2 sm:space-x-3 ml-auto">
           {currentStep < 9 ? (
-            <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <>
               {(currentStep === 5 || currentStep === 6 || currentStep === 8) && (
                 <button
                   type="button"
                   onClick={handleSkip}
-                  className="flex-1 sm:flex-initial flex items-center justify-center px-4 py-3 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer hover:opacity-80"
+                  className="flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border text-xs sm:text-sm font-semibold transition-all cursor-pointer hover:opacity-80"
                   style={{
                     backgroundColor: 'var(--theme-subtle)',
                     borderColor: 'var(--theme-border)',
@@ -2407,7 +2407,7 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex-1 sm:flex-initial flex items-center justify-center space-x-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer active:scale-95"
+                className="flex items-center justify-center space-x-1.5 sm:space-x-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer active:scale-95"
                 style={{
                   backgroundColor: 'var(--theme-btn-bg)',
                   color: 'var(--theme-btn-text)',
@@ -2416,20 +2416,20 @@ export const DietPlanWizard: React.FC<DietPlanWizardProps> = ({
                 <span>Continue</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
-            </div>
+            </>
           ) : (
             <button
               id="generate-diet-plan-btn"
               type="button"
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold shadow-lg transition-all cursor-pointer active:scale-95 text-white animate-pulse"
+              className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 sm:px-8 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-bold shadow-lg transition-all cursor-pointer active:scale-95 text-white animate-pulse"
               style={{
                 backgroundColor: 'var(--theme-primary)',
               }}
             >
               <Sparkles className="w-4 h-4 text-amber-200" />
-              <span>{isGenerating ? 'Generating Your Personalized Plan...' : 'Generate My Diet Plan'}</span>
+              <span>{isGenerating ? 'Generating...' : 'Generate My Diet Plan'}</span>
             </button>
           )}
         </div>

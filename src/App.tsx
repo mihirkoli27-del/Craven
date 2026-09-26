@@ -340,7 +340,7 @@ export default function App() {
       {/* Toast Notification */}
       {toastMessage && (
         <div
-          className="fixed bottom-5 right-5 z-50 text-xs sm:text-sm font-medium px-4 py-3 rounded-2xl shadow-xl flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-3 duration-200 border"
+          className="fixed bottom-20 md:bottom-5 left-4 right-4 sm:left-auto sm:right-5 sm:max-w-md z-50 text-xs sm:text-sm font-medium px-4 py-3 rounded-2xl shadow-xl flex items-center space-x-2 animate-in fade-in slide-in-from-bottom-3 duration-200 border"
           style={{
             backgroundColor: 'var(--theme-btn-bg)',
             color: 'var(--theme-btn-text)',
@@ -370,14 +370,14 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 pb-24 md:pb-8">
         {activeTab === 'plan' && (
           <div className="space-y-6">
             {/* Multi-Step Personalization Form Section */}
             <div>
               {isWizardCollapsed && (
                 <div
-                  className="mb-6 p-4 rounded-2xl border flex items-center justify-between transition-all"
+                  className="mb-6 p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all"
                   style={{
                     backgroundColor: 'var(--theme-surface)',
                     borderColor: 'var(--theme-border)',
@@ -385,7 +385,7 @@ export default function App() {
                 >
                   <div className="flex items-center space-x-3">
                     <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold"
+                      className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-xs font-bold shrink-0"
                       style={{ backgroundColor: 'var(--theme-primary)' }}
                     >
                       <SlidersHorizontal className="w-4 h-4 text-amber-200" />
@@ -403,7 +403,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setIsWizardCollapsed(false)}
-                    className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl border text-xs font-bold transition-all hover:opacity-85 cursor-pointer"
+                    className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 rounded-xl border text-xs font-bold transition-all hover:opacity-85 cursor-pointer w-full sm:w-auto"
                     style={{
                       backgroundColor: 'var(--theme-subtle)',
                       borderColor: 'var(--theme-border)',
@@ -477,7 +477,7 @@ export default function App() {
 
       {/* Footer */}
       <footer
-        className="mt-auto border-t py-6 text-xs text-center transition-colors"
+        className="mt-auto border-t py-6 pb-24 md:pb-6 text-xs text-center transition-colors"
         style={{
           backgroundColor: 'var(--theme-surface)',
           borderColor: 'var(--theme-border)',

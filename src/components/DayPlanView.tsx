@@ -121,20 +121,20 @@ export const DayPlanView: React.FC<DayPlanViewProps> = ({
         <>
           {/* 7-Day Day Selector Bar */}
           <div
-            className="rounded-2xl p-2 sm:p-3 border shadow-xs transition-colors"
+            className="rounded-2xl p-1.5 sm:p-3 border shadow-xs transition-colors"
             style={{
               backgroundColor: 'var(--theme-surface, #FFFFFF)',
               borderColor: 'var(--theme-border, #E2E8F0)',
             }}
           >
-            <div className="grid grid-cols-7 gap-1 sm:gap-2">
+            <div className="flex sm:grid sm:grid-cols-7 gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5">
               {days.map((day, idx) => {
                 const isSelected = idx === selectedDayIndex;
                 return (
                   <button
                     key={day.dayNumber}
                     onClick={() => setSelectedDayIndex(idx)}
-                    className={`flex flex-col items-center justify-center py-2.5 sm:py-3.5 px-1 rounded-xl transition-all cursor-pointer ${
+                    className={`flex-1 min-w-[70px] sm:min-w-0 flex flex-col items-center justify-center py-2 sm:py-3.5 px-2 sm:px-1 rounded-xl shrink-0 transition-all cursor-pointer ${
                       isSelected ? 'shadow-md scale-[1.02] font-semibold' : 'hover:opacity-80'
                     }`}
                     style={{
@@ -142,14 +142,14 @@ export const DayPlanView: React.FC<DayPlanViewProps> = ({
                       color: isSelected ? 'var(--theme-btn-text, #FFFFFF)' : 'var(--theme-text, #0F172A)',
                     }}
                   >
-                    <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider opacity-80">
+                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider opacity-80">
                       {day.dayName.slice(0, 3)}
                     </span>
-                    <span className="text-sm sm:text-base font-bold my-0.5">
+                    <span className="text-xs sm:text-base font-bold my-0.5 whitespace-nowrap">
                       Day {day.dayNumber}
                     </span>
                     <span
-                      className="text-[10px] sm:text-[11px] font-medium opacity-90"
+                      className="text-[9px] sm:text-[11px] font-medium opacity-90 whitespace-nowrap"
                     >
                       {formatCurrency(day.dayEstimatedCost, currency)}
                     </span>
@@ -161,15 +161,15 @@ export const DayPlanView: React.FC<DayPlanViewProps> = ({
 
           {/* Day Overview Banner */}
           <div
-            className="rounded-2xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors"
+            className="rounded-2xl border p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors"
             style={{
               backgroundColor: 'var(--theme-subtle, #F1F5F9)',
               borderColor: 'var(--theme-border, #E2E8F0)',
             }}
           >
             <div>
-              <div className="flex items-center space-x-2">
-                <h2 className="text-xl font-bold font-serif" style={{ color: 'var(--theme-text, #0F172A)' }}>
+              <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                <h2 className="text-lg sm:text-xl font-bold font-serif" style={{ color: 'var(--theme-text, #0F172A)' }}>
                   {activeDay.dayName} Diet Schedule
                 </h2>
                 <span
@@ -193,33 +193,33 @@ export const DayPlanView: React.FC<DayPlanViewProps> = ({
 
             {/* Daily Macros Pill Cluster */}
             <div
-              className="flex items-center gap-2 text-xs font-medium px-3.5 py-2 rounded-xl border shrink-0 transition-colors"
+              className="flex items-center justify-between sm:justify-start gap-1.5 sm:gap-2 text-xs font-medium px-3 sm:px-3.5 py-2 rounded-xl border shrink-0 transition-colors overflow-x-auto no-scrollbar"
               style={{
                 backgroundColor: 'var(--theme-surface, #FFFFFF)',
                 borderColor: 'var(--theme-border, #E2E8F0)',
                 color: 'var(--theme-text, #0F172A)',
               }}
             >
-              <div className="text-center px-1.5">
-                <span className="block text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Protein</span>
-                <span className="font-bold">{formatGrams(activeDay.totalDayMacros.protein)}</span>
+              <div className="text-center px-1 sm:px-1.5">
+                <span className="block text-[9px] sm:text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Protein</span>
+                <span className="font-bold text-xs sm:text-sm">{formatGrams(activeDay.totalDayMacros.protein)}</span>
               </div>
-              <div className="w-px h-6" style={{ backgroundColor: 'var(--theme-border, #E2E8F0)' }} />
-              <div className="text-center px-1.5">
-                <span className="block text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Carbs</span>
-                <span className="font-bold">{formatGrams(activeDay.totalDayMacros.carbs)}</span>
+              <div className="w-px h-5 sm:h-6 shrink-0" style={{ backgroundColor: 'var(--theme-border, #E2E8F0)' }} />
+              <div className="text-center px-1 sm:px-1.5">
+                <span className="block text-[9px] sm:text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Carbs</span>
+                <span className="font-bold text-xs sm:text-sm">{formatGrams(activeDay.totalDayMacros.carbs)}</span>
               </div>
-              <div className="w-px h-6" style={{ backgroundColor: 'var(--theme-border, #E2E8F0)' }} />
-              <div className="text-center px-1.5">
-                <span className="block text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Fat</span>
-                <span className="font-bold">{formatGrams(activeDay.totalDayMacros.fat)}</span>
+              <div className="w-px h-5 sm:h-6 shrink-0" style={{ backgroundColor: 'var(--theme-border, #E2E8F0)' }} />
+              <div className="text-center px-1 sm:px-1.5">
+                <span className="block text-[9px] sm:text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Fat</span>
+                <span className="font-bold text-xs sm:text-sm">{formatGrams(activeDay.totalDayMacros.fat)}</span>
               </div>
               {activeDay.totalDayMacros.fiber !== undefined && (
                 <>
-                  <div className="w-px h-6" style={{ backgroundColor: 'var(--theme-border, #E2E8F0)' }} />
-                  <div className="text-center px-1.5">
-                    <span className="block text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Fiber</span>
-                    <span className="font-bold" style={{ color: 'var(--theme-accent, #059669)' }}>{formatGrams(activeDay.totalDayMacros.fiber)}</span>
+                  <div className="w-px h-5 sm:h-6 shrink-0" style={{ backgroundColor: 'var(--theme-border, #E2E8F0)' }} />
+                  <div className="text-center px-1 sm:px-1.5">
+                    <span className="block text-[9px] sm:text-[10px] uppercase" style={{ color: 'var(--theme-text-muted, #64748B)' }}>Fiber</span>
+                    <span className="font-bold text-xs sm:text-sm" style={{ color: 'var(--theme-accent, #059669)' }}>{formatGrams(activeDay.totalDayMacros.fiber)}</span>
                   </div>
                 </>
               )}
@@ -227,7 +227,7 @@ export const DayPlanView: React.FC<DayPlanViewProps> = ({
           </div>
 
           {/* 4 Daily Meal Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
             {mealList.map(({ key, meal, label, bgBadge }) => {
               const totalTime = meal.prepTimeMinutes + meal.cookTimeMinutes;
               const mealPriceInfo = getMealPricePer100g(meal);
@@ -408,7 +408,7 @@ export const DayPlanView: React.FC<DayPlanViewProps> = ({
         </>
       ) : (
         /* Week Grid View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {days.map((day) => {
             const dayMeals = [
               { key: 'breakfast', meal: day.meals.breakfast, label: 'Breakfast', borderClass: 'border-l-4 border-amber-500' },

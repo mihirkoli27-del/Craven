@@ -34,17 +34,17 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
 
   return (
     <div
-      className="rounded-2xl border p-5 sm:p-7 shadow-xs mb-8 transition-colors"
+      className="rounded-2xl border p-4 sm:p-6 md:p-7 shadow-xs mb-8 transition-colors"
       style={{
         backgroundColor: 'var(--theme-surface)',
         borderColor: 'var(--theme-border)',
         color: 'var(--theme-text)',
       }}
     >
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5 sm:gap-6">
         {/* Left Column: Title & Tags */}
         <div className="flex-1 space-y-3">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             <span
               className="px-2.5 py-1 text-xs font-semibold uppercase tracking-wider rounded-lg border"
               style={{
@@ -91,14 +91,14 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
           </div>
 
           <h1
-            className="text-2xl sm:text-3xl font-bold tracking-tight font-serif"
+            className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight font-serif"
             style={{ color: 'var(--theme-text)' }}
           >
             {plan.title}
           </h1>
 
           <p
-            className="text-sm leading-relaxed max-w-3xl"
+            className="text-xs sm:text-sm leading-relaxed max-w-3xl"
             style={{ color: 'var(--theme-text-muted)' }}
           >
             {plan.summary}
@@ -106,7 +106,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
         </div>
 
         {/* Right Column: Actions & Quick Tier Switch */}
-        <div className="flex flex-wrap lg:flex-col items-center lg:items-end gap-2.5 shrink-0">
+        <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-2.5 shrink-0">
           <div className="flex items-center space-x-2 w-full sm:w-auto">
             <button
               onClick={onPrint}
@@ -137,21 +137,21 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
 
           {/* Budget Switcher Pills */}
           <div
-            className="flex items-center p-1 rounded-xl border text-xs"
+            className="w-full sm:w-auto overflow-x-auto no-scrollbar flex items-center p-1 rounded-xl border text-xs"
             style={{
               backgroundColor: 'var(--theme-subtle)',
               borderColor: 'var(--theme-border)',
             }}
           >
             <span
-              className="text-[11px] font-semibold px-2"
+              className="text-[11px] font-semibold px-2 shrink-0"
               style={{ color: 'var(--theme-text-muted)' }}
             >
               Budget:
             </span>
             <button
               onClick={() => onSelectTier('thrifty')}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-all cursor-pointer ${
                 plan.budgetTier === 'thrifty' ? 'shadow-xs font-bold' : 'hover:opacity-80'
               }`}
               style={{
@@ -159,11 +159,11 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
                 color: plan.budgetTier === 'thrifty' ? 'var(--theme-text)' : 'var(--theme-text-muted)',
               }}
             >
-              Thrifty (₹800-1.1k)
+              Thrifty {plan.currency === '$' ? '($35-50)' : '(₹800-1.1k)'}
             </button>
             <button
               onClick={() => onSelectTier('balanced')}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-all cursor-pointer ${
                 plan.budgetTier === 'balanced' ? 'shadow-xs font-bold' : 'hover:opacity-80'
               }`}
               style={{
@@ -171,11 +171,11 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
                 color: plan.budgetTier === 'balanced' ? 'var(--theme-text)' : 'var(--theme-text-muted)',
               }}
             >
-              Balanced (₹1.1k-1.6k)
+              Balanced {plan.currency === '$' ? '($60-80)' : '(₹1.1k-1.6k)'}
             </button>
             <button
               onClick={() => onSelectTier('gourmet')}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-all cursor-pointer ${
                 plan.budgetTier === 'gourmet' ? 'shadow-xs font-bold' : 'hover:opacity-80'
               }`}
               style={{
@@ -183,7 +183,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
                 color: plan.budgetTier === 'gourmet' ? 'var(--theme-text)' : 'var(--theme-text-muted)',
               }}
             >
-              Gourmet (₹1.6k-2.5k)
+              Gourmet {plan.currency === '$' ? '($90+)' : '(₹1.6k-2.5k)'}
             </button>
           </div>
         </div>
@@ -191,11 +191,11 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
 
       {/* Metrics Bar */}
       <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mt-6 pt-6 border-t"
         style={{ borderColor: 'var(--theme-border)' }}
       >
         <div
-          className="rounded-xl p-3.5 border"
+          className="rounded-xl p-3 sm:p-3.5 border"
           style={{
             backgroundColor: 'var(--theme-subtle)',
             borderColor: 'var(--theme-border)',
@@ -209,7 +209,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
             <span>Weekly Budget</span>
           </div>
           <div
-            className="text-xl font-bold mt-1"
+            className="text-lg sm:text-xl font-bold mt-1"
             style={{ color: 'var(--theme-text)' }}
           >
             {formatCurrency(plan.estimatedWeeklyCost, plan.currency)}
@@ -223,7 +223,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
         </div>
 
         <div
-          className="rounded-xl p-3.5 border"
+          className="rounded-xl p-3 sm:p-3.5 border"
           style={{
             backgroundColor: 'var(--theme-accent-light)',
             borderColor: 'var(--theme-border)',
@@ -237,7 +237,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
             <span>Cost Per Meal</span>
           </div>
           <div
-            className="text-xl font-bold mt-1"
+            className="text-lg sm:text-xl font-bold mt-1"
             style={{ color: 'var(--theme-accent-text)' }}
           >
             {formatCurrency(avgCostPerMeal, plan.currency)}
@@ -246,12 +246,12 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
             className="text-[11px] mt-0.5"
             style={{ color: 'var(--theme-accent-text)' }}
           >
-            28 planned daily meals & snacks
+            28 planned daily meals &amp; snacks
           </div>
         </div>
 
         <div
-          className="rounded-xl p-3.5 border"
+          className="rounded-xl p-3 sm:p-3.5 border"
           style={{
             backgroundColor: 'var(--theme-subtle)',
             borderColor: 'var(--theme-border)',
@@ -265,7 +265,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
             <span>Daily Calorie Target</span>
           </div>
           <div
-            className="text-xl font-bold mt-1"
+            className="text-lg sm:text-xl font-bold mt-1"
             style={{ color: 'var(--theme-text)' }}
           >
             {formatCalories(plan.targetCalories)}
@@ -279,7 +279,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
         </div>
 
         <div
-          className="rounded-xl p-3.5 border"
+          className="rounded-xl p-3 sm:p-3.5 border"
           style={{
             backgroundColor: 'var(--theme-subtle)',
             borderColor: 'var(--theme-border)',
@@ -293,7 +293,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
             <span>Plan Completeness</span>
           </div>
           <div
-            className="text-xl font-bold mt-1"
+            className="text-lg sm:text-xl font-bold mt-1"
             style={{ color: 'var(--theme-text)' }}
           >
             7 Days Ready
@@ -302,7 +302,7 @@ export const PlanOverviewHeader: React.FC<PlanOverviewHeaderProps> = ({
             className="text-[11px] mt-0.5"
             style={{ color: 'var(--theme-text-muted)' }}
           >
-            Breakfast, Lunch, Dinner & Snack
+            Breakfast, Lunch, Dinner &amp; Snack
           </div>
         </div>
       </div>
