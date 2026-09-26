@@ -1,8 +1,6 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
@@ -37,9 +35,10 @@ const isDbUrlValid = Boolean(
 
 if (isDbUrlValid) {
   try {
+    const useSsl = process.env.NODE_ENV === 'production' || Boolean(rawDbUrl?.includes('render.com') || process.env.RENDER);
     pool = new Pool({
       connectionString: rawDbUrl,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+      ssl: useSsl ? { rejectUnauthorized: false } : undefined,
     });
     // Create tables if not existing
     pool.query(`
@@ -288,12 +287,13 @@ function getAI(): GoogleGenAI | null {
   });
 }
 
-// Health Check API
-app.get('/api/health', (req, res) => {
+// Health Check API (for Render and uptime monitors)
+app.get(['/health', '/api/health'], (req, res) => {
   const hasKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY');
   const hasOAuth = Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID !== 'MY_GOOGLE_CLIENT_ID');
   res.json({
     status: 'ok',
+    timestamp: new Date().toISOString(),
     hasGeminiKey: hasKey,
     hasGoogleOAuth: hasOAuth,
     database: isPostgresReady ? 'postgresql' : 'local-json',
@@ -2396,22 +2396,41 @@ app.get('/api/spoonacular/recipe/:id', async (req, res) => {
 
 // Vite Middleware for Development vs Production static serve
 async function start() {
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
+  const distPath = path.join(process.cwd(), 'dist');
+  const hasDist = fs.existsSync(path.join(distPath, 'index.html'));
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true' || hasDist;
+
+  if (!isProduction) {
+    try {
+      const { createServer: createViteServer } = await import('vite');
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: 'spa',
+      });
+      app.use(vite.middlewares);
+      console.log('⚡ Vite development middleware attached.');
+    } catch (err: any) {
+      console.warn('⚠️ Could not initialize Vite development server, serving static assets:', err.message);
+      app.use(express.static(distPath));
+      app.get('*', (req, res) => {
+        if (req.path.startsWith('/api')) {
+          return res.status(404).json({ error: 'Endpoint not found' });
+        }
+        res.sendFile(path.join(distPath, 'index.html'));
+      });
+    }
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*', (req, res) => {
+      if (req.path.startsWith('/api')) {
+        return res.status(404).json({ error: 'Endpoint not found' });
+      }
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Craven Server running on http://0.0.0.0:${PORT}`);
+    console.log(`Craven Server running on http://0.0.0.0:${PORT} [mode: ${isProduction ? 'production' : 'development'}]`);
   });
 }
 
